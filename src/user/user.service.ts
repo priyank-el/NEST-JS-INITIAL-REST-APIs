@@ -4,8 +4,11 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from 'schemas/user.schema';
 
 import * as bcrypt from 'bcrypt'
+import userDto from '../../dto/user.dto';
+import updateUserDTO from '../../dto/user.dto';
 
 @Injectable()
+
 export class UserService {
 
     constructor(
@@ -25,10 +28,16 @@ export class UserService {
     })
   }
 
-  async updateUser(id,user:User):Promise<User>{
-    return await this.UserModel.findByIdAndUpdate(id,user,{
+  async updateUser(id,user:User):Promise<object>{
+    await this.UserModel.findByIdAndUpdate(id,user,{
         new:true
     })
+    const userdto = new updateUserDTO();
+    userdto.name = user.name;
+    userdto.email = user.email;
+    userdto.password = user.password;
+
+    return userdto;
   }
 
   async getUserById(id):Promise<User>{

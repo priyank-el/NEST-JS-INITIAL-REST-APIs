@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { User } from 'schemas/user.schema';
 
 @Controller('users')
+
 export class UserController {
   constructor(private readonly userService:UserService ) {}
 
@@ -10,7 +11,9 @@ export class UserController {
   async fetchAll(@Res() response) {
     const students = await this.userService.getAllUsers();
 
-    return response.status(HttpStatus.OK).json({
+    return response
+    .status(HttpStatus.OK)
+    .json({
       success: true,
       result: students,
     });
@@ -24,12 +27,13 @@ export class UserController {
   }
 
   @Put('/:id')
-  updateUser(@Res() response,@Param('id') id,@Body() user:User){
-    const newUser = this.userService.updateUser(id,user);
+  async updateUser(@Res() response,@Param('id') id,@Body() user:User){
+    const newUser = await this.userService.updateUser(id,user);
 
     return response
     .json({
-        message:'user updated..'
+        message:'user updated..',
+        user:newUser
     })
   }
 
