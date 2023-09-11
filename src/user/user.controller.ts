@@ -17,8 +17,10 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() user:User){
-    return await this.userService.createUser(user);
+  async createUser(@Res() response,@Body() user:User){
+    await this.userService.createUser(user);
+    return response
+    .json({message:"user created succssfully.."})
   }
 
   @Put('/:id')
