@@ -7,7 +7,6 @@ import { UserService } from 'src/user/user.service';
 export class Jwtmiddleware implements NestMiddleware {
   constructor(private readonly jwt:JwtService,private readonly userService:UserService){}
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log('Request...', req.headers);
     const headerToekn = req.headers.authorization;
 
     const token = headerToekn.split(" ")[1];
