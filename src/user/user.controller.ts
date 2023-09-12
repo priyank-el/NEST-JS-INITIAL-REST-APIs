@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'schemas/user.schema';
+import { AuthGuard } from 'src/guards/auth.guard';
+import { Roles } from 'src/roles/role.decorator';
 
 @Controller('users')
 
@@ -8,7 +10,9 @@ export class UserController {
   constructor(private readonly userService:UserService ) {}
 
   @Get()
-  async fetchAll(@Res() response) {
+  @Roles(['ADMIN'])
+  @UseGuards(AuthGuard)
+  async fetchAll(@Req() request,@Res() response) {
     const students = await this.userService.getAllUsers();
 
     return response
@@ -39,7 +43,7 @@ export class UserController {
 
   @Get('/:id')
   async getUserById(@Res() response,@Param('id') id){
-    const fetchedUser = await this.userService.getUserById(id);
+    const fetchedUser = await this.userService.getUser(id);
 
     return response
     .json({user:fetchedUser})
@@ -52,4 +56,16 @@ export class UserController {
     return response
     .json({message:'User deleted successfully..'})
   }
+
+  @Post('/login')
+  async loginUser(@Res() response,@Body() user:User){
+    const token = await this.userService.login(user.email);
+
+    return response
+    .json({
+      message:'User login..',
+      token
+    })
+  }
+
 }
