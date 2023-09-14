@@ -1,25 +1,20 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'schemas/user.schema';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
-import { Jwtmiddleware } from './middlewares/jwtAuth';
-import { JwtService } from '@nestjs/jwt';
+import { UsersModule } from './users/users.module';
+import { AuthService } from './auth/auth.service';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports:[
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/nest-rest-api'),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+    UsersModule,
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/nest-rest-api-setup'),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    AuthModule
   ],
-  controllers: [AppController,UserController],
-  providers: [AppService,UserService,JwtService],
+  controllers: [AppController],
+  providers: [AppService, AuthService],
 })
 
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(Jwtmiddleware)
-      .forRoutes({path:'users',method:RequestMethod.GET});
-  }
-}
+export class AppModule {}
